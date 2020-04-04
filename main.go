@@ -47,7 +47,7 @@ func handleRequest(conn net.Conn) {
 	writer := bufio.NewWriter(conn)
 
 	for {
-		str, err := reader.ReadString('\n')
+		msg, err := reader.ReadString('\n')
 
 		if err == io.EOF {
 			log.Print("client closed connection")
@@ -56,14 +56,14 @@ func handleRequest(conn net.Conn) {
 			log.Panic(err)
 		}
 
-		str = strings.TrimSpace(str)
+		msg = strings.TrimSpace(msg)
 
-		if str == "/q" {
+		if msg == "/q" {
 			log.Printf("received stop signal")
 			close()
 			break
 		} else {
-			writer.WriteString(fmt.Sprintf("> %s\n", str))
+			writer.WriteString(fmt.Sprintf("> %s\n", msg))
 			writer.Flush()
 		}
 	}
