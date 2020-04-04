@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"net"
 	"strings"
@@ -11,6 +10,9 @@ import (
 )
 
 func main() {
+
+	message := make(chan string)
+
 	l, err := net.Listen("tcp", ":3333")
 
 	if err != nil {
@@ -29,11 +31,12 @@ func main() {
 			log.Fatal(err)
 		}
 
-		go handleRequest(conn)
+		// Crée une goroutine à chaque connexion
+		go handleRequest(conn, message)
 	}
 }
 
-func handleRequest(conn net.Conn) {
+func handleRequest(conn net.Conn, message chan string) {
 	log.Printf("accepting new connection %v", conn.RemoteAddr())
 
 	close := func() {
@@ -55,15 +58,16 @@ func handleRequest(conn net.Conn) {
 		} else if err != nil {
 			log.Panic(err)
 		}
-
 		msg = strings.TrimSpace(msg)
+		message <- msg
+		msg = <-message
 
 		if msg == "/q" {
 			log.Printf("received stop signal")
 			close()
 			break
 		} else {
-			writer.WriteString(fmt.Sprintf("> %s\n", msg))
+			writer.WriteString(<-message)
 			writer.Flush()
 		}
 	}
