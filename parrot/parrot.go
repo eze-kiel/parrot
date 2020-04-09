@@ -88,7 +88,7 @@ func (s *Server) handleRequest(conn net.Conn) {
 	reader := bufio.NewReader(conn)
 	// writer := bufio.NewWriter(client.Conn)
 	// writer.Flush()
-	// writer.WriteString("\n<server> enter your nickname and press ENTER: ")
+	// writer.WriteString("<server> enter your nickname and press ENTER: ")
 	// writer.Flush()
 	nick, _ := reader.ReadString('\n')
 
