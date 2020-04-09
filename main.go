@@ -37,9 +37,7 @@ func main() {
 	} else {
 		client := &client.Client{
 			Server: addr,
-			Nick:   "toto",
 		}
 		client.Run()
-		log.Printf("client mode not implemented")
 	}
 }

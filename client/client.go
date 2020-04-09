@@ -48,23 +48,6 @@ func (c *Client) startUI(cnx net.Conn) {
 
 	history := tui.NewVBox()
 
-	go func() {
-		for {
-			message, err := bufio.NewReader(cnx).ReadString('\n')
-			if err != nil {
-				log.Print(err)
-			}
-			message = strings.TrimSpace(message)
-
-			history.Append(tui.NewHBox(
-				tui.NewLabel(time.Now().Format("15:04")),
-				// tui.NewPadder(1, 0, tui.NewLabel(fmt.Sprintf("<%s>", "hugo"))),
-				tui.NewLabel(message),
-				tui.NewSpacer(),
-			))
-		}
-	}()
-
 	historyScroll := tui.NewScrollArea(history)
 	historyScroll.SetAutoscrollToBottom(true)
 
@@ -98,6 +81,26 @@ func (c *Client) startUI(cnx net.Conn) {
 	}
 
 	ui.SetKeybinding("Esc", func() { ui.Quit() })
+
+	go func() {
+		for {
+			r := bufio.NewReader(cnx)
+			message, err := r.ReadString('\n')
+
+			if err != nil {
+				log.Print(err)
+			}
+			message = strings.TrimSpace(message)
+
+			ui.Update(func() {
+				history.Append(tui.NewHBox(
+					tui.NewLabel(time.Now().Format("15:04")),
+					tui.NewPadder(1, 0, tui.NewLabel(message)),
+					tui.NewSpacer(),
+				))
+			})
+		}
+	}()
 
 	if err := ui.Run(); err != nil {
 		log.Fatal(err)

@@ -67,7 +67,7 @@ func (s *Server) orchestrator() {
 			// Send to all clients that a new one arrived
 			for i := range clients {
 				writer := bufio.NewWriter(clients[i])
-				writer.WriteString(newArrival.Nick + " at " + newArrival.Conn.RemoteAddr().String() + " has joined the room\n")
+				writer.WriteString("<server> " + newArrival.Nick + " (" + newArrival.Conn.RemoteAddr().String() + ") has joined the room\n")
 				writer.Flush()
 			}
 
@@ -86,10 +86,12 @@ func (s *Server) handleRequest(conn net.Conn) {
 	var client client
 	client.Conn = conn
 	reader := bufio.NewReader(conn)
-	writer := bufio.NewWriter(client.Conn)
-	writer.WriteString("\n<server> enter your nickname and press ENTER: ")
-	writer.Flush()
+	// writer := bufio.NewWriter(client.Conn)
+	// writer.Flush()
+	// writer.WriteString("\n<server> enter your nickname and press ENTER: ")
+	// writer.Flush()
 	nick, _ := reader.ReadString('\n')
+
 	client.Nick = strings.TrimSpace(nick)
 
 	// Send new client to orchestrator
@@ -113,19 +115,11 @@ func (s *Server) handleRequest(conn net.Conn) {
 			log.Print("client closed connection")
 			break
 		} else if err != nil {
-			log.Panic(err)
+			log.Fatal(err)
 		}
 		msg = strings.TrimSpace(msg)
 
 		newMessage.Message = msg
 		s.message <- newMessage
-
-		if msg == "/q" {
-			log.Printf("received stop signal")
-			close()
-			break
-		} else {
-			s.message <- newMessage
-		}
 	}
 }
