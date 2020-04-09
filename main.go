@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"net"
 	"strings"
@@ -12,6 +11,7 @@ import (
 
 //Client represents a client
 // type Client struct {
+// 	Nick string
 // 	Conn net.Conn
 // }
 
@@ -37,21 +37,25 @@ func main() {
 			log.Fatal(err)
 		}
 
-		go orchestrator(announcement)
+		go orchestrator(announcement, message)
 		go handleRequest(conn, message, announcement)
 	}
 }
 
-func orchestrator(announcement chan net.Conn) {
+func orchestrator(announcement chan net.Conn, message chan string) {
 	var clients []net.Conn
 	for {
-		newArrival := <-announcement
-		clients = append(clients, newArrival)
-		for i := range clients {
-			writer := bufio.NewWriter(clients[i])
-			writer.WriteString("A new client arrived!: " + clients[i].RemoteAddr().String() + "\n")
-			writer.Flush()
-			fmt.Printf("A new client arrived!: %s\n", newArrival.RemoteAddr().String())
+		select {
+		case newArrival := <-announcement:
+			clients = append(clients, newArrival)
+			log.Infof("A new client arrived!: %s\n", newArrival.RemoteAddr().String())
+
+			// Send to all clients that a new one arrived
+			for i := range clients {
+				writer := bufio.NewWriter(clients[i])
+				writer.WriteString("A new client arrived!: " + newArrival.RemoteAddr().String() + "\n")
+				writer.Flush()
+			}
 		}
 	}
 }
@@ -86,6 +90,7 @@ func handleRequest(conn net.Conn, message chan string, announcement chan net.Con
 			close()
 			break
 		} else {
+			message <- msg
 			writer.WriteString("> " + msg + "\n")
 			writer.Flush()
 		}
