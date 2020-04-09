@@ -18,3 +18,6 @@ Client mode :
 
 ## Usage
 The first message you write will be your nickname. If you want to quit the TUI, just press `Esc`.
+
+## Author
+Written by ezekiel.
