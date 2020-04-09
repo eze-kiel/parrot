@@ -9,15 +9,21 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-//Client represents a client
-// type Client struct {
-// 	Nick string
-// 	Conn net.Conn
-// }
+// Client represents a client
+type Client struct {
+	Nick string
+	Conn net.Conn
+}
+
+// Message represents a message
+type Message struct {
+	Sender  string
+	Message string
+}
 
 func main() {
-	announcement := make(chan net.Conn)
-	message := make(chan string)
+	announcement := make(chan Client)
+	message := make(chan Message)
 
 	l, err := net.Listen("tcp", ":3333")
 
@@ -42,27 +48,42 @@ func main() {
 	}
 }
 
-func orchestrator(announcement chan net.Conn, message chan string) {
+func orchestrator(announcement chan Client, message chan Message) {
 	var clients []net.Conn
 	for {
+		// Make the reception of annoucement non-blocking
 		select {
+
 		case newArrival := <-announcement:
-			clients = append(clients, newArrival)
-			log.Infof("A new client arrived!: %s\n", newArrival.RemoteAddr().String())
+			clients = append(clients, newArrival.Conn)
+			log.Infof("A new client arrived!: %s\n", newArrival.Conn.RemoteAddr().String())
 
 			// Send to all clients that a new one arrived
 			for i := range clients {
 				writer := bufio.NewWriter(clients[i])
-				writer.WriteString("A new client arrived!: " + newArrival.RemoteAddr().String() + "\n")
+				writer.WriteString("A new client arrived!: " + newArrival.Conn.RemoteAddr().String() + "\n")
+				writer.Flush()
+			}
+
+		case newMessage := <-message:
+			// Send to all clients the new message
+			for i := range clients {
+				writer := bufio.NewWriter(clients[i])
+				writer.WriteString(newMessage.Sender + " " + newMessage.Message + "\n")
 				writer.Flush()
 			}
 		}
 	}
 }
 
-func handleRequest(conn net.Conn, message chan string, announcement chan net.Conn) {
+func handleRequest(conn net.Conn, message chan Message, announcement chan Client) {
+	var client Client
+	client.Conn = conn
+	reader := bufio.NewReader(conn)
+	client.Nick, _ = reader.ReadString('\n')
+
 	// Send new client to orchestrator
-	announcement <- conn
+	announcement <- client
 
 	close := func() {
 		log.Print("closing connection")
@@ -71,10 +92,13 @@ func handleRequest(conn net.Conn, message chan string, announcement chan net.Con
 
 	defer close()
 
-	reader := bufio.NewReader(conn)
-	writer := bufio.NewWriter(conn)
+	//writer := bufio.NewWriter(conn)
 
 	for {
+		var newMessage Message
+
+		newMessage.Sender = client.Nick
+
 		msg, err := reader.ReadString('\n')
 
 		if err == io.EOF {
@@ -85,14 +109,17 @@ func handleRequest(conn net.Conn, message chan string, announcement chan net.Con
 		}
 		msg = strings.TrimSpace(msg)
 
+		newMessage.Message = msg
+		message <- newMessage
+
 		if msg == "/q" {
 			log.Printf("received stop signal")
 			close()
 			break
 		} else {
-			message <- msg
-			writer.WriteString("> " + msg + "\n")
-			writer.Flush()
+			message <- newMessage
+			//writer.WriteString("> " + msg + "\n")
+			//writer.Flush()
 		}
 	}
 }
