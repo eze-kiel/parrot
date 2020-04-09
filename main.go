@@ -10,8 +10,13 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+//Client represents a client
+// type Client struct {
+// 	Conn net.Conn
+// }
+
 func main() {
-	announcement := make(chan string)
+	announcement := make(chan net.Conn)
 	message := make(chan string)
 
 	l, err := net.Listen("tcp", ":3333")
@@ -37,15 +42,14 @@ func main() {
 	}
 }
 
-func orchestrator(announcement chan string) {
+func orchestrator(announcement chan net.Conn) {
 	newArrival := <-announcement
-	fmt.Printf("A new client arrived!: %s\n", newArrival)
+	fmt.Printf("A new client arrived!: %s\n", newArrival.RemoteAddr().String())
 }
 
-func handleRequest(conn net.Conn, message chan string, announcement chan string) {
-	//log.Printf("accepting new connection %v", conn.RemoteAddr())
-	// Send IP to orchestrator
-	announcement <- conn.RemoteAddr().String()
+func handleRequest(conn net.Conn, message chan string, announcement chan net.Conn) {
+	// Send new client to orchestrator
+	announcement <- conn
 
 	close := func() {
 		log.Print("closing connection")
