@@ -43,8 +43,17 @@ func main() {
 }
 
 func orchestrator(announcement chan net.Conn) {
-	newArrival := <-announcement
-	fmt.Printf("A new client arrived!: %s\n", newArrival.RemoteAddr().String())
+	var clients []net.Conn
+	for {
+		newArrival := <-announcement
+		clients = append(clients, newArrival)
+		for i := range clients {
+			writer := bufio.NewWriter(clients[i])
+			writer.WriteString("A new client arrived!: " + clients[i].RemoteAddr().String() + "\n")
+			writer.Flush()
+			fmt.Printf("A new client arrived!: %s\n", newArrival.RemoteAddr().String())
+		}
+	}
 }
 
 func handleRequest(conn net.Conn, message chan string, announcement chan net.Conn) {
