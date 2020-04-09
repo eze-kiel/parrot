@@ -1,4 +1,6 @@
 # Parrot :bird: :speech_balloon:
+![Licence](https://img.shields.io/badge/License-GPL-brightgreen)
+
 A TUI irc-like chat written in go
 
 ## Launch
