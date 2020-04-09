@@ -69,7 +69,7 @@ func orchestrator(announcement chan Client, message chan Message) {
 			// Send to all clients the new message
 			for i := range clients {
 				writer := bufio.NewWriter(clients[i])
-				writer.WriteString(newMessage.Sender + " " + newMessage.Message + "\n")
+				writer.WriteString("<" + newMessage.Sender + ">" + " " + newMessage.Message + "\n")
 				writer.Flush()
 			}
 		}
@@ -80,7 +80,8 @@ func handleRequest(conn net.Conn, message chan Message, announcement chan Client
 	var client Client
 	client.Conn = conn
 	reader := bufio.NewReader(conn)
-	client.Nick, _ = reader.ReadString('\n')
+	nick, _ := reader.ReadString('\n')
+	client.Nick = strings.TrimSpace(nick)
 
 	// Send new client to orchestrator
 	announcement <- client
@@ -91,8 +92,6 @@ func handleRequest(conn net.Conn, message chan Message, announcement chan Client
 	}
 
 	defer close()
-
-	//writer := bufio.NewWriter(conn)
 
 	for {
 		var newMessage Message
@@ -118,8 +117,6 @@ func handleRequest(conn net.Conn, message chan Message, announcement chan Client
 			break
 		} else {
 			message <- newMessage
-			//writer.WriteString("> " + msg + "\n")
-			//writer.Flush()
 		}
 	}
 }
