@@ -56,12 +56,12 @@ func orchestrator(announcement chan Client, message chan Message) {
 
 		case newArrival := <-announcement:
 			clients = append(clients, newArrival.Conn)
-			log.Infof("A new client arrived!: %s\n", newArrival.Conn.RemoteAddr().String())
+			log.Infof("New client: %s at %s\n", newArrival.Nick, newArrival.Conn.RemoteAddr().String())
 
 			// Send to all clients that a new one arrived
 			for i := range clients {
 				writer := bufio.NewWriter(clients[i])
-				writer.WriteString("A new client arrived!: " + newArrival.Conn.RemoteAddr().String() + "\n")
+				writer.WriteString(newArrival.Nick + " at " + newArrival.Conn.RemoteAddr().String() + " has joined the room\n")
 				writer.Flush()
 			}
 
@@ -80,6 +80,9 @@ func handleRequest(conn net.Conn, message chan Message, announcement chan Client
 	var client Client
 	client.Conn = conn
 	reader := bufio.NewReader(conn)
+	writer := bufio.NewWriter(client.Conn)
+	writer.WriteString("<server> enter your nickname and press ENTER: ")
+	writer.Flush()
 	nick, _ := reader.ReadString('\n')
 	client.Nick = strings.TrimSpace(nick)
 
