@@ -2,6 +2,9 @@ package main
 
 import (
 	"log"
+	"math/rand"
+	"strconv"
+	"time"
 
 	"github.com/eze-kiel/parrot/client"
 	"github.com/eze-kiel/parrot/command"
@@ -30,6 +33,14 @@ func main() {
 func runClient(addr string, nickname string) {
 	if addr == "" {
 		log.Fatal("Error: you must supply a server address")
+	}
+
+	if nickname == "guest" {
+		s1 := rand.NewSource(time.Now().UnixNano())
+		r1 := rand.New(s1)
+		guestid := r1.Intn(10000)
+
+		nickname = nickname + strconv.Itoa(guestid)
 	}
 
 	client := &client.Client{
