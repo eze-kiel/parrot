@@ -19,7 +19,7 @@ Client mode :
 ## Usage
 The first message you write will be your nickname. If you want to quit the TUI, just press `Esc`.
 
-## 
+## Roadmap
 1. Fix the current bug about message that don't arrive when there is more than 1 client connected
 1. Add the following commands:
     * `/nick [new nick]` - change the nickname

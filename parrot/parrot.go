@@ -9,13 +9,16 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Client represents a client
+// Command interface must be implemented by supported commands
+type Command interface {
+	Execute(string) (string, error)
+}
+
 type client struct {
 	Nick string
 	Conn net.Conn
 }
 
-// Message represents a message
 type message struct {
 	Sender  string
 	Message string
@@ -25,16 +28,18 @@ type Server struct {
 	Addr         string
 	announcement chan client
 	message      chan message
+	commands     []Command
 }
 
-func (s *Server) Run() {
-	s.announcement = make(chan client)
-	s.message = make(chan message)
+func (s *Server) Run(c ...Command) error {
+	s.announcement = make(chan client, 50)
+	s.message = make(chan message, 50)
+	s.commands = c
 
 	l, err := net.Listen("tcp", s.Addr)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	log.Printf("listening on %s", s.Addr)
@@ -42,16 +47,19 @@ func (s *Server) Run() {
 	// close the socket when server is ended
 	defer l.Close()
 
+	go s.orchestrator()
+
 	for {
 		conn, err := l.Accept()
 
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
-		go s.orchestrator()
 		go s.handleRequest(conn)
 	}
+
+	return nil
 }
 
 func (s *Server) orchestrator() {
@@ -72,6 +80,8 @@ func (s *Server) orchestrator() {
 			}
 
 		case newMessage := <-s.message:
+			// Debug purposes
+			log.Infof("message transmitted: %s", newMessage)
 			// Send to all clients the new message
 			for i := range clients {
 				writer := bufio.NewWriter(clients[i])
@@ -119,7 +129,22 @@ func (s *Server) handleRequest(conn net.Conn) {
 		}
 		msg = strings.TrimSpace(msg)
 
-		newMessage.Message = msg
+		newMessage.Message = s.runCommand(msg)
 		s.message <- newMessage
 	}
+}
+
+func (s *Server) runCommand(msg string) string {
+	if msg[0] == '/' {
+		for _, cmd := range s.commands {
+			res, err := cmd.Execute(msg)
+			if err != nil {
+				continue
+			}
+
+			return res
+		}
+	}
+
+	return msg
 }

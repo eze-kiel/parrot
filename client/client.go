@@ -10,18 +10,10 @@ import (
 	"github.com/marcusolsson/tui-go"
 )
 
-type post struct {
-	username string
-	message  string
-	time     string
-}
-
 type Client struct {
 	Nick   string
 	Server string
 }
-
-var posts = []post{}
 
 func (c *Client) Run() error {
 	// Connect to server
@@ -36,12 +28,7 @@ func (c *Client) Run() error {
 
 func (c *Client) startUI(cnx net.Conn) {
 	sidebar := tui.NewVBox(
-		tui.NewLabel("CHANNELS"),
-		tui.NewLabel("general"),
-		tui.NewLabel("random"),
-		tui.NewLabel(""),
-		tui.NewLabel("DIRECT MESSAGES"),
-		tui.NewLabel("slackbot"),
+		tui.NewLabel("WELCOME"),
 		tui.NewSpacer(),
 	)
 	sidebar.SetBorder(true)
@@ -81,6 +68,7 @@ func (c *Client) startUI(cnx net.Conn) {
 	}
 
 	ui.SetKeybinding("Esc", func() { ui.Quit() })
+	ui.SetKeybinding("Ctrl+c", func() { ui.Quit() })
 
 	go func() {
 		for {
