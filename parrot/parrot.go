@@ -120,12 +120,15 @@ func (s *Server) handleRequest(conn net.Conn) {
 
 		msg, err := reader.ReadString('\n')
 		if err == io.EOF {
-			msg = " "
+			log.Print("client closed connection")
+			break
 		} else if err != nil {
 			log.Fatal(err)
 		}
 		msg = strings.TrimSpace(msg)
-
+		if msg == "" {
+			msg = " "
+		}
 		newMessage.Message = s.runCommand(msg)
 		s.message <- newMessage
 	}
