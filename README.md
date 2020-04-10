@@ -20,6 +20,7 @@ options:
         nickname used to connect to a server
 ```
 
+Note that when a client doesn't provide a nickname, a random number will be appended to 'guest' in order to avoid duplicates nicknames.
 ## Usage
 Typical use as a server:
 
