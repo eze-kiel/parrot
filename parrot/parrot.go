@@ -119,11 +119,8 @@ func (s *Server) handleRequest(conn net.Conn) {
 		newMessage.Sender = client.Nick
 
 		msg, err := reader.ReadString('\n')
-		if msg == "" {
+		if err == io.EOF {
 			msg = " "
-		} else if err == io.EOF {
-			log.Print("client closed connection")
-			break
 		} else if err != nil {
 			log.Fatal(err)
 		}
