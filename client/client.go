@@ -32,6 +32,8 @@ func (c *Client) startUI(cnx net.Conn) {
 		tui.NewSpacer(),
 		tui.NewLabel("To quit, press Esc"),
 		tui.NewSpacer(),
+		tui.NewLabel("Commands available: /date"),
+		tui.NewSpacer(),
 	)
 	topbar.SetBorder(true)
 
