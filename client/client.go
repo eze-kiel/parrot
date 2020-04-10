@@ -32,7 +32,7 @@ func (c *Client) Run() error {
 
 func (c *Client) startUI(cnx net.Conn) {
 	topbar := tui.NewVBox(
-		tui.NewLabel("WELCOME on parrot ! Your first message will be your nickname."),
+		tui.NewLabel("WELCOME ON PARROT !"),
 		tui.NewSpacer(),
 		tui.NewLabel("To quit, press Esc"),
 		tui.NewSpacer(),
