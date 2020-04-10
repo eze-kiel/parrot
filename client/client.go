@@ -27,11 +27,13 @@ func (c *Client) Run() error {
 }
 
 func (c *Client) startUI(cnx net.Conn) {
-	sidebar := tui.NewVBox(
-		tui.NewLabel("WELCOME"),
+	topbar := tui.NewVBox(
+		tui.NewLabel("WELCOME on parrot !"),
+		tui.NewSpacer(),
+		tui.NewLabel("To quit, press Esc"),
 		tui.NewSpacer(),
 	)
-	sidebar.SetBorder(true)
+	topbar.SetBorder(true)
 
 	history := tui.NewVBox()
 
@@ -60,7 +62,7 @@ func (c *Client) startUI(cnx net.Conn) {
 		input.SetText("")
 	})
 
-	root := tui.NewHBox(sidebar, chat)
+	root := tui.NewVBox(topbar, chat)
 
 	ui, err := tui.New(root)
 	if err != nil {
