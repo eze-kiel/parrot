@@ -126,24 +126,24 @@ func (s *Server) handleRequest(conn net.Conn) {
 			log.Fatal(err)
 		}
 		msg = strings.TrimSpace(msg)
-		if msg == "" {
-			msg = " "
-		}
+
 		newMessage.Message = s.runCommand(msg)
 		s.message <- newMessage
 	}
 }
 
 func (s *Server) runCommand(msg string) string {
-	if msg[0] == '/' {
-		for _, cmd := range s.commands {
-			res, err := cmd.Execute(msg)
-			if err != nil {
-				continue
-			}
+	if len(msg) == 0 || msg[0] != '/' {
+		return msg
+	}
 
-			return res
+	for _, cmd := range s.commands {
+		res, err := cmd.Execute(msg)
+		if err != nil {
+			continue
 		}
+
+		return res
 	}
 
 	return msg
