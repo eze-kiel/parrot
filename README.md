@@ -16,6 +16,7 @@ options:
         client mode: address to connect to
     
     -nick <nickname>
+        default: guest
         nickname used to connect to a server
 ```
 
@@ -30,6 +31,7 @@ as a client:
 
 
 ## Roadmap
+1. Append a random number to the 'guest' username to dissociate them
 1. Add the following commands:
     * `/nick [new nick]` - change the nickname
     * `/who` - list all users

@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"os"
 
 	"github.com/eze-kiel/parrot/client"
 	"github.com/eze-kiel/parrot/command"
@@ -18,7 +16,7 @@ func main() {
 	var nickname, addr string
 
 	flag.BoolVar(&serv, "server", false, "server mode")
-	flag.StringVar(&nickname, "nick", "", "nickname")
+	flag.StringVar(&nickname, "nick", "guest", "nickname")
 	flag.StringVar(&addr, "addr", "127.0.0.1:3333", "ip address")
 	flag.Parse()
 
@@ -26,10 +24,6 @@ func main() {
 		runServer(addr)
 	}
 
-	if nickname == "" {
-		fmt.Println("You must provide a nickname with the flag -nick")
-		os.Exit(1)
-	}
 	runClient(addr, nickname)
 }
 
