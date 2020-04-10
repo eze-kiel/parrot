@@ -36,7 +36,7 @@ as a client:
         print the date following "Monday, 2006/01/02" format
 ```
 ## Roadmap
-1. Append a random number to the 'guest' username to dissociate them
+1. Manage RateLimiting
 1. Add the following commands:
     * `/nick [new nick]` - change the nickname
     * `/who` - list all users
