@@ -2,7 +2,6 @@ package parrot
 
 import (
 	"bufio"
-	"io"
 	"net"
 	"strings"
 
@@ -120,10 +119,7 @@ func (s *Server) handleRequest(conn net.Conn) {
 
 		msg, err := reader.ReadString('\n')
 
-		if err == io.EOF {
-			log.Print("client closed connection")
-			break
-		} else if err != nil {
+		if err != nil {
 			log.Fatal(err)
 		}
 		msg = strings.TrimSpace(msg)
