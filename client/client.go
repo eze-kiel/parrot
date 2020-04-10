@@ -22,6 +22,10 @@ func (c *Client) Run() error {
 		return err
 	}
 
+	w := bufio.NewWriter(conn)
+	w.WriteString(c.Nick + "\n")
+	w.Flush()
+
 	c.startUI(conn)
 	return nil
 }

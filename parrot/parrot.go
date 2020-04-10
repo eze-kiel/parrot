@@ -98,7 +98,6 @@ func (s *Server) handleRequest(conn net.Conn) {
 	reader := bufio.NewReader(conn)
 
 	nick, _ := reader.ReadString('\n')
-
 	client.Nick = strings.TrimSpace(nick)
 
 	// Send new client to orchestrator
