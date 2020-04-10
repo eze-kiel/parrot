@@ -30,7 +30,11 @@ as a client:
 
 `parrot -addr 192.168.0.20:3333 -nick JohnDoe`
 
-
+## Commands
+```
+    /date
+        print the date following "Monday, 2006/01/02" format
+```
 ## Roadmap
 1. Append a random number to the 'guest' username to dissociate them
 1. Add the following commands:
