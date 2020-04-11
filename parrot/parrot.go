@@ -50,19 +50,34 @@ func (s *Server) Run(c ...Command) error {
 
 	go s.orchestrator()
 
+	var waitingConn []net.Conn
 	for {
 		conn, err := l.Accept()
+
+		waitingConn = append(waitingConn, conn)
 
 		if err != nil {
 			return err
 		}
 
-		// Rate limiter
 		rate := time.Second / 10
-		throttle := time.Tick(rate)
-		<-throttle
+		burstLimit := 100
+		tick := time.NewTicker(rate)
+		defer tick.Stop()
+		throttle := make(chan time.Time, burstLimit)
+		go func() {
+			for t := range tick.C {
+				select {
+				case throttle <- t:
+				default:
+				}
+			} // does not exit after tick.Stop()
+		}()
 
-		go s.handleRequest(conn)
+		for _, req := range waitingConn {
+			<-throttle
+			go s.handleRequest(req)
+		}
 
 	}
 }
@@ -78,6 +93,7 @@ func (s *Server) orchestrator() {
 			log.Infof("New client: %s at %s\n", newArrival.Nick, newArrival.Conn.RemoteAddr().String())
 
 			// Send to all clients that a new one arrived
+
 			for i := range clients {
 				writer := bufio.NewWriter(clients[i])
 				writer.WriteString("<server> " + newArrival.Nick + " (" + newArrival.Conn.RemoteAddr().String() + ") has joined the room\n")
@@ -85,6 +101,23 @@ func (s *Server) orchestrator() {
 			}
 
 		case newMessage := <-s.message:
+
+			// Rate limiter for incoming messages
+			rate := time.Second / 10
+			burstLimit := 100
+			tick := time.NewTicker(rate)
+			defer tick.Stop()
+			throttle := make(chan time.Time, burstLimit)
+			go func() {
+				for t := range tick.C {
+					select {
+					case throttle <- t:
+					default:
+					}
+				}
+			}()
+			<-throttle // rate limit our Service.Method RPCs
+
 			// Debug purposes
 			log.Infof("message transmitted: %s", newMessage)
 			// Send to all clients the new message
