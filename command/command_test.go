@@ -13,6 +13,8 @@ func TestExecute(t *testing.T) {
 	}{
 		{"/date", time.Now().Format("Monday, 2006/01/02")},
 		{"/plop", ""},
+		{"", ""},
+		{"/", ""},
 	}
 
 	for _, cmd := range inputCmd {
