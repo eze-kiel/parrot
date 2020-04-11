@@ -1,6 +1,8 @@
 # Parrot :bird: :speech_balloon:
 ![Licence](https://img.shields.io/badge/License-GPL-brightgreen)
 
+![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)
+
 A TUI irc-like chat written in go.
 
 ## Launch
