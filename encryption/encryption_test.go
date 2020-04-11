@@ -17,9 +17,9 @@ func TestEncryptDecrypt(t *testing.T) {
 
 	for _, test := range cipher {
 		result := Encrypt([]byte(test.data), test.passphrase)
-		result = Decrypt([]byte(result), test.passphrase)
+		result = Decrypt(result, test.passphrase)
 
-		if result != test.data {
+		if string(result) != test.data {
 			t.Errorf("DateCommand.Execute() was incorrect, got: %s, want: %s.", result, test.data)
 		}
 	}
