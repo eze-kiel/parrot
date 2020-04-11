@@ -51,6 +51,9 @@ as a client:
     * `/quit` - quit the room
 * [ ] Write tests (in progress...)
 * [ ] Add encryption
+* [ ] Embed notification sound in the binary file
+* [ ] Add a disconnect message
+* [ ] Fix issue#1
 
 ## Author
 Written by ezekiel.
