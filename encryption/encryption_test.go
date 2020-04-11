@@ -20,7 +20,7 @@ func TestEncryptDecrypt(t *testing.T) {
 		result = Decrypt(result, test.passphrase)
 
 		if string(result) != test.data {
-			t.Errorf("DateCommand.Execute() was incorrect, got: %s, want: %s.", result, test.data)
+			t.Errorf("Encrypt and decrypt were incorrect, got: %s, want: %s.", result, test.data)
 		}
 	}
 }
