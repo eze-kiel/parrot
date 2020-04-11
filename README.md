@@ -45,6 +45,7 @@ as a client:
 ## Roadmap :soon:
 * [x] ~~Manage rate limiting~~
 * [x] ~~Add notification sound~~
+* [x] ~~Add a disconnect message~~
 * [ ] Add the following commands:
     * `/nick [new nick]` - change the nickname
     * `/who` - list all users
@@ -52,7 +53,6 @@ as a client:
 * [ ] Write tests (in progress...)
 * [ ] Add encryption
 * [ ] Embed notification sound in the binary file
-* [ ] Add a disconnect message
 
 ## Author
 Written by ezekiel.

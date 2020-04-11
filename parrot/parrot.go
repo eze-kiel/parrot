@@ -29,12 +29,14 @@ type Server struct {
 	Addr         string
 	announcement chan client
 	message      chan message
+	departure    chan client
 	commands     []Command
 }
 
 func (s *Server) Run(c ...Command) error {
 	s.announcement = make(chan client, 50)
 	s.message = make(chan message, 50)
+	s.departure = make(chan client)
 	s.commands = c
 
 	l, err := net.Listen("tcp", s.Addr)
@@ -83,19 +85,32 @@ func (s *Server) Run(c ...Command) error {
 }
 
 func (s *Server) orchestrator() {
-	var clients []net.Conn
+	// var clients []net.Conn
+	clients := make(map[string]net.Conn)
 	for {
 		// Make the reception of annoucement non-blocking
 		select {
 
 		case newArrival := <-s.announcement:
-			clients = append(clients, newArrival.Conn)
+			// clients = append(clients, newArrival.Conn)
+			clients[newArrival.Nick] = newArrival.Conn
 			log.Infof("New client: %s at %s\n", newArrival.Nick, newArrival.Conn.RemoteAddr().String())
 
 			// Send to all clients that a new one arrived
 			for i := range clients {
 				writer := bufio.NewWriter(clients[i])
 				writer.WriteString("<server> " + newArrival.Nick + " (" + newArrival.Conn.RemoteAddr().String() + ") has joined the room\n")
+				writer.Flush()
+			}
+
+		case newDeparture := <-s.departure:
+
+			// Delete the client which is leaving
+			delete(clients, newDeparture.Nick)
+
+			for i := range clients {
+				writer := bufio.NewWriter(clients[i])
+				writer.WriteString("<server> " + newDeparture.Nick + " (" + newDeparture.Conn.RemoteAddr().String() + ") has left the room\n")
 				writer.Flush()
 			}
 
@@ -142,6 +157,7 @@ func (s *Server) handleRequest(conn net.Conn) {
 
 	close := func() {
 		log.Print("closing connection")
+		s.departure <- client
 		conn.Close()
 	}
 
@@ -155,7 +171,8 @@ func (s *Server) handleRequest(conn net.Conn) {
 		msg, err := reader.ReadString('\n')
 		if err == io.EOF {
 			log.Print("client closed connection")
-			break
+
+			return
 		} else if err != nil {
 			log.Fatal(err)
 		}
@@ -163,6 +180,7 @@ func (s *Server) handleRequest(conn net.Conn) {
 
 		newMessage.Message = s.runCommand(msg)
 		s.message <- newMessage
+
 	}
 }
 
