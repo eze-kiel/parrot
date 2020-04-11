@@ -39,11 +39,11 @@ as a client:
         print the date following "Monday, 2006/01/02" format
 ```
 ## Roadmap
-* [x] Manage RateLimiting
+* [x] ~~Manage rate limiting~~
 * [ ] Add the following commands:
-    * [ ] `/nick [new nick]` - change the nickname
-    * [ ] `/who` - list all users
-    * [ ] `/quit` - quit the room
+    * `/nick [new nick]` - change the nickname
+    * `/who` - list all users
+    * `/quit` - quit the room
 
 ## Author
 Written by ezekiel.
