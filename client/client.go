@@ -3,12 +3,15 @@ package client
 import (
 	"bufio"
 	"net"
+	"os"
 	"strings"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-
+	"github.com/faiface/beep"
+	"github.com/faiface/beep/mp3"
+	"github.com/faiface/beep/speaker"
 	"github.com/marcusolsson/tui-go"
+	log "github.com/sirupsen/logrus"
 )
 
 type Client struct {
@@ -16,7 +19,7 @@ type Client struct {
 	Server string
 }
 
-func (c *Client) Run() error {
+func (c *Client) Run(sound bool) error {
 	// Connect to server
 	conn, err := net.Dial("tcp", c.Server)
 	if err != nil {
@@ -28,11 +31,11 @@ func (c *Client) Run() error {
 	w.WriteString(c.Nick + "\n")
 	w.Flush()
 
-	c.startUI(conn)
+	c.startUI(conn, sound)
 	return nil
 }
 
-func (c *Client) startUI(cnx net.Conn) {
+func (c *Client) startUI(cnx net.Conn, sound bool) {
 	topbar := tui.NewVBox(
 		tui.NewLabel("WELCOME ON PARROT !"),
 		tui.NewSpacer(),
@@ -90,6 +93,11 @@ func (c *Client) startUI(cnx net.Conn) {
 			}
 			message = strings.TrimSpace(message)
 
+			if sound {
+				// Play sound at each new message
+				playSound("notification")
+			}
+
 			ui.Update(func() {
 				history.Append(tui.NewHBox(
 					tui.NewLabel(time.Now().Format("15:04")),
@@ -103,4 +111,25 @@ func (c *Client) startUI(cnx net.Conn) {
 	if err := ui.Run(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func playSound(track string) {
+	f, err := os.Open("assets/" + track + ".mp3")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	streamer, format, err := mp3.Decode(f)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer streamer.Close()
+
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
+	done := make(chan bool)
+	speaker.Play(beep.Seq(streamer, beep.Callback(func() {
+		done <- true
+	})))
+
+	<-done
 }

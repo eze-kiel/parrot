@@ -14,10 +14,11 @@ import (
 )
 
 func main() {
-	var serv bool
+	var serv, sound bool
 	var nickname, addr string
 
 	flag.BoolVar(&serv, "server", false, "server mode")
+	flag.BoolVar(&sound, "sound", false, "sound mode")
 	flag.StringVar(&nickname, "nick", "guest", "nickname")
 	flag.StringVar(&addr, "addr", "127.0.0.1:3333", "ip address")
 	flag.Parse()
@@ -26,10 +27,10 @@ func main() {
 		runServer(addr)
 	}
 
-	runClient(addr, nickname)
+	runClient(addr, nickname, sound)
 }
 
-func runClient(addr string, nickname string) {
+func runClient(addr string, nickname string, sound bool) {
 	if addr == "" {
 		log.Fatal("Error: you must supply a server address")
 	}
@@ -46,7 +47,7 @@ func runClient(addr string, nickname string) {
 		Server: addr,
 		Nick:   nickname,
 	}
-	client.Run()
+	client.Run(sound)
 }
 
 func runServer(addr string) {
