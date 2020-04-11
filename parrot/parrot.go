@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"strings"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -56,10 +57,14 @@ func (s *Server) Run(c ...Command) error {
 			return err
 		}
 
-		go s.handleRequest(conn)
-	}
+		// Rate limiter
+		rate := time.Second / 10
+		throttle := time.Tick(rate)
+		<-throttle
 
-	return nil
+		go s.handleRequest(conn)
+
+	}
 }
 
 func (s *Server) orchestrator() {
