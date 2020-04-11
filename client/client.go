@@ -37,14 +37,13 @@ func (c *Client) Run(sound bool) error {
 
 func (c *Client) startUI(cnx net.Conn, sound bool) {
 	topbar := tui.NewVBox(
-		tui.NewLabel("WELCOME ON PARROT !"),
-		tui.NewSpacer(),
 		tui.NewLabel("To quit, press Esc"),
 		tui.NewSpacer(),
 		tui.NewLabel("Commands available: /date"),
 		tui.NewSpacer(),
 	)
 	topbar.SetBorder(true)
+	topbar.SetTitle("Welcome on Parrot Chat")
 
 	history := tui.NewVBox()
 
@@ -53,6 +52,7 @@ func (c *Client) startUI(cnx net.Conn, sound bool) {
 
 	historyBox := tui.NewVBox(historyScroll)
 	historyBox.SetBorder(true)
+	historyBox.SetTitle("Chat")
 
 	input := tui.NewEntry()
 	input.SetFocused(true)
@@ -61,6 +61,7 @@ func (c *Client) startUI(cnx net.Conn, sound bool) {
 	inputBox := tui.NewHBox(input)
 	inputBox.SetBorder(true)
 	inputBox.SetSizePolicy(tui.Expanding, tui.Maximum)
+	inputBox.SetTitle("Your message")
 
 	chat := tui.NewVBox(historyBox, inputBox)
 	chat.SetSizePolicy(tui.Expanding, tui.Expanding)
