@@ -50,8 +50,8 @@ func (s *Server) Run(c ...Command) error {
 
 	go s.orchestrator()
 
-	var waitingConn []net.Conn
 	for {
+		var waitingConn []net.Conn
 		conn, err := l.Accept()
 
 		waitingConn = append(waitingConn, conn)
@@ -61,19 +61,7 @@ func (s *Server) Run(c ...Command) error {
 		}
 
 		rate := time.Second / 10
-		burstLimit := 100
-		tick := time.NewTicker(rate)
-		defer tick.Stop()
-		throttle := make(chan time.Time, burstLimit)
-		go func() {
-			for t := range tick.C {
-				select {
-				case throttle <- t:
-				default:
-				}
-			}
-		}()
-
+		throttle := time.Tick(rate)
 		for _, req := range waitingConn {
 			<-throttle
 			go s.handleRequest(req)
