@@ -43,7 +43,7 @@ func (c *Client) startUI(cnx net.Conn, sound bool) {
 		tui.NewSpacer(),
 	)
 	topbar.SetBorder(true)
-	topbar.SetTitle("Welcome on Parrot Chat")
+	topbar.SetTitle(" Welcome on Parrot Chat ")
 
 	history := tui.NewVBox()
 
@@ -52,7 +52,7 @@ func (c *Client) startUI(cnx net.Conn, sound bool) {
 
 	historyBox := tui.NewVBox(historyScroll)
 	historyBox.SetBorder(true)
-	historyBox.SetTitle("Chat")
+	historyBox.SetTitle(" Chat ")
 
 	input := tui.NewEntry()
 	input.SetFocused(true)
@@ -61,7 +61,7 @@ func (c *Client) startUI(cnx net.Conn, sound bool) {
 	inputBox := tui.NewHBox(input)
 	inputBox.SetBorder(true)
 	inputBox.SetSizePolicy(tui.Expanding, tui.Maximum)
-	inputBox.SetTitle("Your message")
+	inputBox.SetTitle(" Your message ")
 
 	chat := tui.NewVBox(historyBox, inputBox)
 	chat.SetSizePolicy(tui.Expanding, tui.Expanding)
