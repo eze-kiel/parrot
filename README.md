@@ -44,6 +44,7 @@ as a client:
     * `/nick [new nick]` - change the nickname
     * `/who` - list all users
     * `/quit` - quit the room
+* [ ] Add tests
 
 ## Author
 Written by ezekiel.
