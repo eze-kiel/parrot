@@ -45,6 +45,7 @@ as a client:
     * `/who` - list all users
     * `/quit` - quit the room
 * [ ] Add tests
+* [ ] Add encryption
 
 ## Author
 Written by ezekiel.
