@@ -71,7 +71,7 @@ func (s *Server) Run(c ...Command) error {
 				case throttle <- t:
 				default:
 				}
-			} // does not exit after tick.Stop()
+			}
 		}()
 
 		for _, req := range waitingConn {
@@ -93,7 +93,6 @@ func (s *Server) orchestrator() {
 			log.Infof("New client: %s at %s\n", newArrival.Nick, newArrival.Conn.RemoteAddr().String())
 
 			// Send to all clients that a new one arrived
-
 			for i := range clients {
 				writer := bufio.NewWriter(clients[i])
 				writer.WriteString("<server> " + newArrival.Nick + " (" + newArrival.Conn.RemoteAddr().String() + ") has joined the room\n")
@@ -116,7 +115,7 @@ func (s *Server) orchestrator() {
 					}
 				}
 			}()
-			<-throttle // rate limit our Service.Method RPCs
+			<-throttle
 
 			// Debug purposes
 			log.Infof("message transmitted: %s", newMessage)
