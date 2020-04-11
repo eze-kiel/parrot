@@ -20,6 +20,10 @@ options:
     -nick <nickname>
         default: guest
         nickname used to connect to a server
+
+    -sound
+        default: false
+        play a sound a every new message
 ```
 
 Note that when a client doesn't provide a nickname, a random number will be appended to 'guest' in order to avoid duplicates nicknames.
@@ -31,7 +35,7 @@ Typical use as a server:
 
 as a client:
 
-`parrot -addr 192.168.0.20:3333 -nick JohnDoe`
+`parrot -addr 192.168.0.20:3333 -nick JohnDoe -sound`
 
 ## Commands
 ```
@@ -40,6 +44,7 @@ as a client:
 ```
 ## Roadmap :soon:
 * [x] ~~Manage rate limiting~~
+* [x] ~~Add notification sound~~
 * [ ] Add the following commands:
     * `/nick [new nick]` - change the nickname
     * `/who` - list all users
