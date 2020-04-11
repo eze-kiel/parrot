@@ -103,7 +103,7 @@ func (s *Server) orchestrator() {
 
 			// Rate limiter for incoming messages
 			rate := time.Second / 10
-			burstLimit := 100
+			burstLimit := 10
 			tick := time.NewTicker(rate)
 			defer tick.Stop()
 			throttle := make(chan time.Time, burstLimit)
