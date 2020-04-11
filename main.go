@@ -8,10 +8,9 @@ import (
 
 	"github.com/eze-kiel/parrot/client"
 	"github.com/eze-kiel/parrot/command"
+	"github.com/eze-kiel/parrot/parrot"
 
 	"github.com/namsral/flag"
-
-	"github.com/eze-kiel/parrot/parrot"
 )
 
 func main() {
