@@ -38,7 +38,7 @@ as a client:
     /date
         print the date following "Monday, 2006/01/02" format
 ```
-## Roadmap
+## Roadmap :soon:
 * [x] ~~Manage rate limiting~~
 * [ ] Add the following commands:
     * `/nick [new nick]` - change the nickname
