@@ -2,10 +2,11 @@ package client
 
 import (
 	"bufio"
-	"log"
 	"net"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/marcusolsson/tui-go"
 )
@@ -19,6 +20,7 @@ func (c *Client) Run() error {
 	// Connect to server
 	conn, err := net.Dial("tcp", c.Server)
 	if err != nil {
+		log.Fatalf("Error: %s unreachable\n", c.Server)
 		return err
 	}
 
