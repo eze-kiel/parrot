@@ -84,17 +84,16 @@ func (c *Client) startUI(cnx net.Conn, sound bool) {
 	}
 
 	ui.SetKeybinding("Esc", func() {
-		err := os.Remove("notification.mp3")
-
+		err := cleanAfterUse(sound)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 		ui.Quit()
 	})
-	ui.SetKeybinding("Ctrl+c", func() {
-		err := os.Remove("notification.mp3")
 
+	ui.SetKeybinding("Ctrl+c", func() {
+		err := cleanAfterUse(sound)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -171,4 +170,12 @@ func playSound(track string) {
 	})))
 
 	<-done
+}
+
+func cleanAfterUse(sound bool) error {
+	if sound {
+		err := os.Remove("notification.mp3")
+		return err
+	}
+	return nil
 }
