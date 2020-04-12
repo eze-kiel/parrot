@@ -2,6 +2,7 @@ package client
 
 import (
 	"bufio"
+	"fmt"
 	"net"
 	"os"
 	"strings"
@@ -82,8 +83,24 @@ func (c *Client) startUI(cnx net.Conn, sound bool) {
 		log.Fatal(err)
 	}
 
-	ui.SetKeybinding("Esc", func() { ui.Quit() })
-	ui.SetKeybinding("Ctrl+c", func() { ui.Quit() })
+	ui.SetKeybinding("Esc", func() {
+		err := os.Remove("notification.mp3")
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		ui.Quit()
+	})
+	ui.SetKeybinding("Ctrl+c", func() {
+		err := os.Remove("notification.mp3")
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		ui.Quit()
+	})
 
 	if sound {
 		box := packr.NewBox("../assets")
