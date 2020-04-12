@@ -43,16 +43,17 @@ as a client:
         print the date following "Monday, 2006/01/02" format
 ```
 ## Roadmap :soon:
-* [x] ~~Manage rate limiting~~
-* [x] ~~Add notification sound~~
-* [x] ~~Add a disconnect message~~
+* [x] Manage rate limiting
+* [x] Add notification sound
+* [x] Add a disconnect message
+* [x] Embed notification sound in the binary file
 * [ ] Add the following commands:
     * `/nick [new nick]` - change the nickname
     * `/who` - list all users
     * `/quit` - quit the room
 * [ ] Write tests (in progress...)
 * [ ] Add encryption
-* [ ] Embed notification sound in the binary file
+* [ ] Add basic UTF-8 emojis support
 
 ## Author
 Written by ezekiel.

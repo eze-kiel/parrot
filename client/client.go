@@ -10,6 +10,7 @@ import (
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/mp3"
 	"github.com/faiface/beep/speaker"
+	"github.com/gobuffalo/packr"
 	"github.com/marcusolsson/tui-go"
 	log "github.com/sirupsen/logrus"
 )
@@ -84,7 +85,27 @@ func (c *Client) startUI(cnx net.Conn, sound bool) {
 	ui.SetKeybinding("Esc", func() { ui.Quit() })
 	ui.SetKeybinding("Ctrl+c", func() { ui.Quit() })
 
+	if sound {
+		box := packr.NewBox("../assets")
+		notifRaw, err := box.FindString("notification.mp3")
+		if err != nil {
+			log.Printf("Error opening notification.mp3: %v", err)
+		}
+
+		f, err := os.Create("notification.mp3")
+		if err != nil {
+			log.Printf("Error while creating notification.mp3: %v", err)
+		}
+		defer f.Close()
+
+		_, err = f.WriteString(notifRaw)
+		if err != nil {
+			log.Printf("Error while writing in notification.mp3")
+		}
+	}
+
 	go func() {
+
 		for {
 			r := bufio.NewReader(cnx)
 			message, err := r.ReadString('\n')
@@ -96,7 +117,7 @@ func (c *Client) startUI(cnx net.Conn, sound bool) {
 
 			if sound {
 				// Play sound at each new message
-				playSound("notification")
+				playSound("notification.mp3")
 			}
 
 			ui.Update(func() {
@@ -115,9 +136,9 @@ func (c *Client) startUI(cnx net.Conn, sound bool) {
 }
 
 func playSound(track string) {
-	f, err := os.Open("assets/" + track + ".mp3")
+	f, err := os.Open(track)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error opening %s: %v", track, err)
 	}
 
 	streamer, format, err := mp3.Decode(f)
