@@ -1,5 +1,6 @@
 # Parrot :bird: :speech_balloon:
 ![Licence](https://img.shields.io/badge/License-GPL-brightgreen)
+[![Go Report Card](https://goreportcard.com/badge/github.com/eze-kiel/parrot)](https://goreportcard.com/report/github.com/eze-kiel/parrot)
 
 ![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)
 
