@@ -56,5 +56,3 @@ as a client:
 * [ ] Add encryption
 * [ ] Add basic UTF-8 emojis support
 
-## Author
-Written by ezekiel.
